@@ -8,14 +8,14 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
 
 template = """
-You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise. Answer in detail.
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise. Answer in detail. Dont print out <>
 Question: {question} 
 Context: {context} 
 Answer:
 """
 
-pdfs_directory = './data'
-txt_directory = './questions'
+pdfs_directory = 'data/'
+txt_directory = 'data/'
 
 embeddings = OllamaEmbeddings(model="deepseek-r1:8b")
 vector_store = InMemoryVectorStore(embeddings)
@@ -65,15 +65,11 @@ def read_txt_to_array(file_path):
             lines.append(line.strip())
     return lines
 
+on = st.toggle("Upload question file")
+            
 uploaded_file = st.file_uploader(
     "Upload PDF",
     type="pdf",
-    accept_multiple_files=False
-)
-
-question_file = st.file_uploader(
-    "Upload questions TXT",
-    type="txt",
     accept_multiple_files=False
 )
 
@@ -85,23 +81,28 @@ if uploaded_file:
     st.chat_message("user").write(f"Finished indexing {uploaded_file.name}")
     st.chat_message("assistant").write("Ready to answer questions")
 
-    # question = st.chat_input()
+    question = st.chat_input()
 
-    # if question:
-    #     st.chat_message("user").write(question)
-        
-    #     related_documents = retrieve_docs(question)
-    #     print(related_documents)
-    #     answer = answer_question(question, related_documents)
-    #     st.chat_message("assistant").write(answer)
-
-if question_file: 
-    upload_txt(question_file)
-    lines_array = read_txt_to_array(txt_directory + question_file.name)
-    for question in lines_array:
-        print(question)
-        st.chat_message("user").write(f"Asking question: {question}")
+    if question:
+        st.chat_message("user").write(question)
         related_documents = retrieve_docs(question)
         answer = answer_question(question, related_documents)
+        answer
         st.chat_message("assistant").write(answer)
-    
+
+if on:
+    question_file = st.file_uploader(
+    "Upload questions TXT",
+    type="txt",
+    accept_multiple_files=False
+)
+    if question_file: 
+        upload_txt(question_file)
+        lines_array = read_txt_to_array(txt_directory + question_file.name)
+        for question in lines_array:
+            print(question)
+            st.chat_message("user").write(f"Asking question: {question}")
+            related_documents = retrieve_docs(question)
+            answer = answer_question(question, related_documents)
+            st.chat_message("assistant").write(answer)
+          
