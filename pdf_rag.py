@@ -8,13 +8,14 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
 
 template = """
-You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise. Answer in detail.
 Question: {question} 
 Context: {context} 
 Answer:
 """
 
-pdfs_directory = 'Dobot-MG400-Hardware-User-Guide.pdf'
+pdfs_directory = './data'
+txt_directory = './questions'
 
 embeddings = OllamaEmbeddings(model="deepseek-r1:8b")
 vector_store = InMemoryVectorStore(embeddings)
@@ -23,6 +24,10 @@ model = OllamaLLM(model="deepseek-r1:8b")
 
 def upload_pdf(file):
     with open(pdfs_directory + file.name, "wb") as f:
+        f.write(file.getbuffer())
+
+def upload_txt(file):
+    with open(txt_directory + file.name, "wb") as f:
         f.write(file.getbuffer())
 
 def load_pdf(file_path):
@@ -53,9 +58,22 @@ def answer_question(question, documents):
 
     return chain.invoke({"question": question, "context": context})
 
+def read_txt_to_array(file_path):
+    lines = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            lines.append(line.strip())
+    return lines
+
 uploaded_file = st.file_uploader(
     "Upload PDF",
     type="pdf",
+    accept_multiple_files=False
+)
+
+question_file = st.file_uploader(
+    "Upload questions TXT",
+    type="txt",
     accept_multiple_files=False
 )
 
@@ -64,11 +82,26 @@ if uploaded_file:
     documents = load_pdf(pdfs_directory + uploaded_file.name)
     chunked_documents = split_text(documents)
     index_docs(chunked_documents)
+    st.chat_message("user").write(f"Finished indexing {uploaded_file.name}")
+    st.chat_message("assistant").write("Ready to answer questions")
 
-    question = st.chat_input()
+    # question = st.chat_input()
 
-    if question:
-        st.chat_message("user").write(question)
+    # if question:
+    #     st.chat_message("user").write(question)
+        
+    #     related_documents = retrieve_docs(question)
+    #     print(related_documents)
+    #     answer = answer_question(question, related_documents)
+    #     st.chat_message("assistant").write(answer)
+
+if question_file: 
+    upload_txt(question_file)
+    lines_array = read_txt_to_array(txt_directory + question_file.name)
+    for question in lines_array:
+        print(question)
+        st.chat_message("user").write(f"Asking question: {question}")
         related_documents = retrieve_docs(question)
         answer = answer_question(question, related_documents)
         st.chat_message("assistant").write(answer)
+    
