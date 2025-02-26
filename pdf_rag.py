@@ -22,6 +22,13 @@ vector_store = InMemoryVectorStore(embeddings)
 
 model = OllamaLLM(model="deepseek-r1:8b")
 
+st.title(':red[PDF] RAG')
+st.write('This is an app to answer questions using data from technical documents, such as user manuals.')
+st.write('It is based on the principle of Retrieval-Augmented Generation (:red[RAG]) - a technique that modifies interactions with a language model so that it responds to user queries with reference to a specified set of documents.')
+st.write('Upload a file below and try it out for yourself!')
+st.divider()
+st.write(':gray[Model currently in use:] ' + model.model)
+
 def upload_pdf(file):
     with open(pdfs_directory + file.name, "wb") as f:
         f.write(file.getbuffer())
