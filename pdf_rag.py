@@ -17,10 +17,10 @@ Answer:
 pdfs_directory = 'data/'
 txt_directory = 'data/'
 
-embeddings = OllamaEmbeddings(model="deepseek-r1:8b")
+embeddings = OllamaEmbeddings(model="llama3")
 vector_store = InMemoryVectorStore(embeddings)
 
-model = OllamaLLM(model="deepseek-r1:8b")
+model = OllamaLLM(model="llama3")
 
 st.title(':red[PDF] RAG')
 st.write('This is an app to answer questions using data from technical documents, such as user manuals.')
@@ -72,6 +72,11 @@ def read_txt_to_array(file_path):
             lines.append(line.strip())
     return lines
 
+def save_answers_to_txt(filename, answers):
+    with open(filename, "w", encoding="utf-8") as file:
+        for answer in answers:
+            file.write(answer + "\n")
+
 on = st.toggle("Upload question file")
             
 uploaded_file = st.file_uploader(
@@ -103,6 +108,7 @@ if on:
     type="txt",
     accept_multiple_files=False
 )
+    answers = []
     if question_file: 
         upload_txt(question_file)
         lines_array = read_txt_to_array(txt_directory + question_file.name)
@@ -111,5 +117,9 @@ if on:
             st.chat_message("user").write(f"Asking question: {question}")
             related_documents = retrieve_docs(question)
             answer = answer_question(question, related_documents)
+            answers.append(answer)
             st.chat_message("assistant").write(answer)
-          
+        
+        output_filename = "answers.txt"
+        save_answers_to_txt(output_filename, answers)
+    
