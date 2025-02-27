@@ -1,0 +1,10 @@
+What are the key differences between the Raspberry Pi 5 and Raspberry Pi 4 in terms of processor, GPU, and RAM?
+How can the Raspberry Pi 5 be accessed remotely using SSH and the Putty program?
+What are the steps to install the Raspberry Pi 5 operating system (Bookworm) on a blank microSD card?
+Explain how to set a static IP address for the Raspberry Pi 5 to prevent changes after reboot.
+What is the function of the gpiozero library in Raspberry Pi 5, and why is it used instead of RPi.GPIO?
+Describe the process of setting up and using an I²C LCD with Raspberry Pi 5.
+What are the main features of the Sense HAT, and how can it be used for temperature, humidity, and pressure monitoring?
+How can you generate and output different waveform signals using a Digital-to-Analog Converter (DAC) on the Raspberry Pi 5?
+What are the benefits of using TightVNC for remote access to the Raspberry Pi 5's desktop GUI?
+How can the Raspberry Pi 5 be used to control external devices over Bluetooth using Python?

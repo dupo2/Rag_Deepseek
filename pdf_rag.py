@@ -17,10 +17,10 @@ Answer:
 pdfs_directory = 'data/'
 txt_directory = 'data/'
 
-embeddings = OllamaEmbeddings(model="llama3")
+embeddings = OllamaEmbeddings(model="nemotron-mini")
 vector_store = InMemoryVectorStore(embeddings)
 
-model = OllamaLLM(model="llama3")
+model = OllamaLLM(model="nemotron-mini")
 
 st.title(':red[PDF] RAG')
 st.write('This is an app to answer questions using data from technical documents, such as user manuals.')
